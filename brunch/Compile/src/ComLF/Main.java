@@ -1,6 +1,11 @@
 package ComLF;
 import java.util.ArrayList;
 
+/**
+ * 提取公共左因子
+ * @author WuyaMony
+ *
+ */
 public class Main {
 	private ArrayList<String> pro = new ArrayList<>();
 
