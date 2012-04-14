@@ -38,7 +38,7 @@ public class First {
 		rela = new HashMap<>();
 		first_set = new HashMap<>();
 		pros = new HashMap<>();
-		isEpsilon=new HashMap<>();
+		isEpsilon = new HashMap<>();
 		for (String s : ps) {
 			String[] pr = s.split("->");
 			String[] rs = pr[1].split("[|]");
@@ -57,16 +57,16 @@ public class First {
 	public Map<String, Set<String>> getUnTermFirstSet() {
 		return first_set;
 	}
-	
-	
+
 	/**
 	 * 获取字串的first集
+	 * 
 	 * @param pr
 	 * @return
 	 */
-	public Set<String> getStringFirstSet(String pr){
-		Set<String> fi=new HashSet<>();
-		Set<String> dep=new HashSet<>();
+	public Set<String> getStringFirstSet(String pr) {
+		Set<String> fi = new HashSet<>();
+		Set<String> dep = new HashSet<>();
 		int index = 0;
 		while (index < pr.length()) {// 遍历产生式的每一个符号
 			String t = getNextToken(pr, index);
@@ -79,19 +79,19 @@ public class First {
 				dep.add(t);// 此依赖于t
 				if (!inferUnTermEpsilon(t)) {// 此非终结符不可能为ε，不必再向下搜索了
 					break;
-				}else if(index>=pr.length()){//即最后一个非终结符，且可能为空
+				} else if (index >= pr.length()) {// 即最后一个非终结符，且可能为空
 					fi.add("ε");
 				}
 			}
 		}
 		for (String d : dep) {
 			Set<String> its = first_set.get(d);
-			UnionWithoutEpsilon(its,fi);
+			UnionWithoutEpsilon(its, fi);
 		}
 		return fi;
 	}
 
-	public static void UnionWithoutEpsilon(Set<String> src,Set<String> des){
+	public static void UnionWithoutEpsilon(Set<String> src, Set<String> des) {
 		boolean epsilon = src.contains("ε");
 		if (epsilon)
 			src.remove("ε");// 暂时移除ε
@@ -123,7 +123,7 @@ public class First {
 						rela.get(t).add(prod.getKey());// 此依赖于t
 						if (!_inferUnTermEpsilon(t)) {// 此非终结符不可能为ε，不必再向下搜索了
 							break;
-						}else if(index>=p.length()){//即最后一个非终结符，且可能为空
+						} else if (index >= p.length()) {// 即最后一个非终结符，且可能为空
 							first_set.get(prod.getKey()).add("ε");
 						}
 					}
@@ -138,8 +138,7 @@ public class First {
 	 */
 	private void fillSetByDependency() {
 		LinkedList<String> depend_list = SetOpSort(rela);
-		String it = null;
-		while ((it = depend_list.pollLast()) != null) {
+		for (String it : depend_list) {
 			Set<String> its = first_set.get(it);
 			boolean epsilon = its.contains("ε");
 			if (epsilon)
@@ -170,7 +169,7 @@ public class First {
 		}
 		return depend_list;
 	}
-	
+
 	/**
 	 * 依赖排序
 	 * 
@@ -179,7 +178,7 @@ public class First {
 	 * @param node
 	 */
 	private static void dependby(String node, Map<String, Boolean> his,
-			Map<String, Set<String>> rela, List<String> depend_list) {
+			Map<String, Set<String>> rela, LinkedList<String> depend_list) {
 		if (!his.containsKey(node) || his.get(node))// 被访问过，回溯
 			return;
 		his.put(node, true);
@@ -187,18 +186,19 @@ public class First {
 			dependby(s, his, rela, depend_list);
 		}
 		// 完成了所有的依赖才能够添加
-		depend_list.add(node);
+		depend_list.addLast(node);
 	}
-	
+
 	/**
 	 * 推断指定的非终结符是否可能为ε
+	 * 
 	 * @param T
 	 * @return
 	 */
 	public boolean inferUnTermEpsilon(String T) {
 		return first_set.get(T).contains("ε");
 	}
-	
+
 	/**
 	 * 推断指定的非终结符是否可能为ε
 	 * 
