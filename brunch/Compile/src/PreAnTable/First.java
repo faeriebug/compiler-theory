@@ -23,20 +23,22 @@ public class First {
 	Map<String, Set<String>> first_set;
 	/** 产生式 */
 	Map<String, String[]> pros;
-	
-	Map<String,Boolean> isEpsilon;
+
+	Map<String, Boolean> isEpsilon;
 
 	public static void main(String[] args) {
 		First f = new First();
 		String[] input = { "E->TE'", "E'->+TE'|ε", "T->FT'", "T'->*FT'|ε",
 				"F->(E)|i" };
-		f.analyse(input);
+		f.SetGrammar(input);
+		f.analyse();
 	}
 
-	public Map<String, Set<String>> analyse(String[] ps) {
+	public void SetGrammar(String[] ps) {
 		rela = new HashMap<>();
 		first_set = new HashMap<>();
 		pros = new HashMap<>();
+		isEpsilon=new HashMap<>();
 		for (String s : ps) {
 			String[] pr = s.split("->");
 			String[] rs = pr[1].split("[|]");
@@ -44,7 +46,66 @@ public class First {
 			first_set.put(pr[0], new HashSet<String>());
 			isEpsilon.put(pr[0], null);
 		}
+		analyse();
+	}
 
+	/**
+	 * 获取first集
+	 * 
+	 * @return
+	 */
+	public Map<String, Set<String>> getUnTermFirstSet() {
+		return first_set;
+	}
+	
+	
+	/**
+	 * 获取字串的first集
+	 * @param pr
+	 * @return
+	 */
+	public Set<String> getStringFirstSet(String pr){
+		Set<String> fi=new HashSet<>();
+		Set<String> dep=new HashSet<>();
+		int index = 0;
+		while (index < pr.length()) {// 遍历产生式的每一个符号
+			String t = getNextToken(pr, index);
+			index += t.length();
+			if (IsTerminal(t)) {// 终结符
+				fi.add(t);// 向first集合中添加元素
+				return fi;
+			} else {// 非终结符
+				// 添加依赖项
+				dep.add(t);// 此依赖于t
+				if (!inferUnTermEpsilon(t)) {// 此非终结符不可能为ε，不必再向下搜索了
+					break;
+				}else if(index>=pr.length()){//即最后一个非终结符，且可能为空
+					fi.add("ε");
+				}
+			}
+		}
+		for (String d : dep) {
+			Set<String> its = first_set.get(d);
+			UnionWithoutEpsilon(its,fi);
+		}
+		return fi;
+	}
+
+	public static void UnionWithoutEpsilon(Set<String> src,Set<String> des){
+		boolean epsilon = src.contains("ε");
+		if (epsilon)
+			src.remove("ε");// 暂时移除ε
+		des.addAll(src);
+		if (epsilon)
+			src.add("ε");
+	}
+
+	/**
+	 * 计算出first集
+	 * 
+	 * @return
+	 */
+	private void analyse() {
 		for (Entry<String, String[]> prod : pros.entrySet()) {// 遍历每一个非终结符
 			for (String p : prod.getValue()) {// 遍历对应的每一个产生式
 				int index = 0;
@@ -60,31 +121,23 @@ public class First {
 							rela.put(t, new HashSet<String>());
 						}
 						rela.get(t).add(prod.getKey());// 此依赖于t
-						if (!inferEpsilon(t)) {// 此非终结符不可能为ε，不必再向下搜索了
+						if (!_inferUnTermEpsilon(t)) {// 此非终结符不可能为ε，不必再向下搜索了
 							break;
+						}else if(index>=p.length()){//即最后一个非终结符，且可能为空
+							first_set.get(prod.getKey()).add("ε");
 						}
 					}
 				}
 			}
 		}
-		fillSetByDependency();
-		return first_set;
+		fillSetByDependency();// 根据依赖项填充各first集
 	}
 
 	/**
-	 * 集合c的first集变化，引起的依赖集合的变化 新增的元素中非ε的要添加
-	 * 
-	 * @param c
+	 * 根据依赖项填充各first集
 	 */
-	void fillSetByDependency() {
-		Map<String, Boolean> his = new HashMap<String, Boolean>();
-		LinkedList<String> depend_list = new LinkedList<>();
-		for (String s : rela.keySet()) {
-			his.put(s, false);
-		}
-		for (String s : rela.keySet()) {
-			dependby(depend_list, his, s);
-		}
+	private void fillSetByDependency() {
+		LinkedList<String> depend_list = SetOpSort(rela);
 		String it = null;
 		while ((it = depend_list.pollLast()) != null) {
 			Set<String> its = first_set.get(it);
@@ -101,33 +154,60 @@ public class First {
 	}
 
 	/**
-	 * 依赖于node节点的其他节点 本算法就是搜索出一个集合运算的顺序，回答这个问题：”哪个个集合先加入依赖集合中，哪个个后加，才不会出现遗漏“。
+	 * 依赖于node节点的其他节点 本算法就是搜索出一个集合运算的顺序，回答这个问题：”哪个个集合先加入依赖集合中，哪个个后加，才不会出现遗漏“
+	 * 
+	 * @param rela
+	 * @return
+	 */
+	public static LinkedList<String> SetOpSort(Map<String, Set<String>> rela) {
+		LinkedList<String> depend_list = new LinkedList<>();
+		Map<String, Boolean> his = new HashMap<String, Boolean>();
+		for (String s : rela.keySet()) {
+			his.put(s, false);
+		}
+		for (String s : rela.keySet()) {
+			dependby(s, his, rela, depend_list);
+		}
+		return depend_list;
+	}
+	
+	/**
+	 * 依赖排序
 	 * 
 	 * @param depend_list
 	 * @param his
 	 * @param node
 	 */
-	void dependby(List<String> depend_list, Map<String, Boolean> his,
-			String node) {
+	private static void dependby(String node, Map<String, Boolean> his,
+			Map<String, Set<String>> rela, List<String> depend_list) {
 		if (!his.containsKey(node) || his.get(node))// 被访问过，回溯
 			return;
 		his.put(node, true);
 		for (String s : rela.get(node)) {// 依赖于node的节点
-			dependby(depend_list, his, s);
+			dependby(s, his, rela, depend_list);
 		}
 		// 完成了所有的依赖才能够添加
 		depend_list.add(node);
 	}
-
+	
 	/**
-	 * 推断制定的非终结符是否可能为ε
+	 * 推断指定的非终结符是否可能为ε
+	 * @param T
+	 * @return
+	 */
+	public boolean inferUnTermEpsilon(String T) {
+		return first_set.get(T).contains("ε");
+	}
+	
+	/**
+	 * 推断指定的非终结符是否可能为ε
 	 * 
 	 * @param pros
 	 * @param T
 	 * @return
 	 */
-	boolean inferEpsilon(String T) {
-		if(isEpsilon.get(T)!=null){
+	private boolean _inferUnTermEpsilon(String T) {
+		if (isEpsilon.get(T) != null) {
 			return isEpsilon.get(T);
 		}
 		if (first_set.get(T).contains("ε")) {
@@ -141,7 +221,7 @@ public class First {
 				String t = getNextToken(p, index);
 				index += t.length();
 				if (!IsTerminal(t)) {// 非终结符
-					if (!inferEpsilon(t)) {// 其中一个非终结符不可能为空则不可能为空
+					if (!_inferUnTermEpsilon(t)) {// 其中一个非终结符不可能为空则不可能为空
 						continue outer;
 					}
 				} else {// 终结符
@@ -159,13 +239,37 @@ public class First {
 	}
 
 	/**
+	 * 推断字串是否为空
+	 * 
+	 * @param T
+	 * @return
+	 */
+	boolean inferStringEpsilon(String B) {
+		int index = 0;
+		while (index < B.length()) {
+			String t = getNextToken(B, index);
+			index += t.length();
+			if (!IsTerminal(t)) {// 非终结符
+				if (!_inferUnTermEpsilon(t)) {// 其中一个非终结符不可能为空则不可能为空
+					return false;
+				}
+			} else {// 终结符
+				if (!t.equals("ε")) {// 非ε终结符，则不可能为空
+					return false;
+				}
+			}
+		}
+		return true;// 如果不可能，则一定跳转到下次循环进行查找
+	}
+
+	/**
 	 * 获取下一个符号
 	 * 
 	 * @param pr
 	 * @param start
 	 * @return
 	 */
-	String getNextToken(String pr, int start) {
+	public static String getNextToken(String pr, int start) {
 		char a = pr.charAt(start);
 		if ((a >= '!' && a <= '~') || a == 'ε') {
 			if (a >= 'A' && a <= 'Z') {// 如果是大写字母，则要考虑A'。
@@ -185,7 +289,7 @@ public class First {
 	 * @param t
 	 * @return
 	 */
-	boolean IsTerminal(String t) {
+	public static boolean IsTerminal(String t) {
 		char a = t.charAt(0);
 		return !(a >= 'A' && a <= 'Z');
 	}
