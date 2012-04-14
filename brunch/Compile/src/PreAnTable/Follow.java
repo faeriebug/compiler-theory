@@ -56,8 +56,7 @@ public class Follow {
 
 	private void fillSetByDependency() {
 		LinkedList<String> depend_list = First.SetOpSort(rela);
-		String it = null;
-		while ((it = depend_list.pollLast()) != null) {
+		for (String it : depend_list) {
 			Set<String> its = follow_set.get(it);
 			for (String s : rela.get(it)) {// 依赖于node的节点
 				// first(it)-{ε}<-first(s)
