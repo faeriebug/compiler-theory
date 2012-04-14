@@ -42,6 +42,7 @@ public class First {
 			String[] rs = pr[1].split("[|]");
 			pros.put(pr[0], rs);
 			first_set.put(pr[0], new HashSet<String>());
+			isEpsilon.put(pr[0], null);
 		}
 
 		for (Entry<String, String[]> prod : pros.entrySet()) {// 遍历每一个非终结符
@@ -126,7 +127,11 @@ public class First {
 	 * @return
 	 */
 	boolean inferEpsilon(String T) {
+		if(isEpsilon.get(T)!=null){
+			return isEpsilon.get(T);
+		}
 		if (first_set.get(T).contains("ε")) {
+			isEpsilon.put(T, true);
 			return true;
 		}
 		String[] pro = pros.get(T);
@@ -146,8 +151,10 @@ public class First {
 				}
 			}
 			first_set.get(T).add("ε");
+			isEpsilon.put(T, true);
 			return true;// 如果不可能，则一定跳转到下次循环进行查找
 		}
+		isEpsilon.put(T, false);
 		return false;// 如果可能，则一定在前面的查找中找到返回了。
 	}
 
