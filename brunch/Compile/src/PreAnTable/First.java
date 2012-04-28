@@ -2,8 +2,8 @@ package PreAnTable;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -23,7 +23,7 @@ public class First {
 	Map<String, Set<String>> first_set;
 	/** 产生式 */
 	Map<String, String[]> pros;
-
+	/**记录某个非终结符是否为ε*/
 	Map<String, Boolean> isEpsilon;
 
 	public static void main(String[] args) {
@@ -32,23 +32,38 @@ public class First {
 				"F->(E)|i" };
 		f.SetGrammar(input);
 		f.analyse();
+		Map<String, Set<String>> first_set=f.getUnTermFirstSet();
+		for (Entry<String, Set<String>> s : first_set.entrySet()) {// 遍历每一个非终结符
+			System.out.print("First("+s.getKey()+")={");
+			String ss;
+			for (Iterator<String> iterator = s.getValue().iterator(); iterator.hasNext();) {
+				ss=iterator.next();
+				System.out.print(ss);
+				if(iterator.hasNext()){
+					System.out.print(",");
+				}else{
+					System.out.println("}");
+				}
+			}
+		}
 	}
 
 	public void SetGrammar(String[] ps) {
+		SetGrammar(PreProcess.Process(ps));
+	}
+	
+	public void SetGrammar(Map<String, String[]> pros){
 		rela = new HashMap<>();
 		first_set = new HashMap<>();
-		pros = new HashMap<>();
+		this.pros=pros;
 		isEpsilon = new HashMap<>();
-		for (String s : ps) {
-			String[] pr = s.split("->");
-			String[] rs = pr[1].split("[|]");
-			pros.put(pr[0], rs);
-			first_set.put(pr[0], new HashSet<String>());
-			isEpsilon.put(pr[0], null);
+		for (String s : pros.keySet()) {
+			first_set.put(s, new HashSet<String>());
+			isEpsilon.put(s, null);
 		}
 		analyse();
 	}
-
+	
 	/**
 	 * 获取first集
 	 * 
@@ -113,9 +128,12 @@ public class First {
 					String t = getNextToken(p, index);
 					index += t.length();
 					if (IsTerminal(t)) {// 终结符
+						if(t.equals("ε") && index < p.length()){//t为ε，但不是最后一个终结符，所以不加入。
+							continue;
+						}
 						first_set.get(prod.getKey()).add(t);// 向first集合中添加元素
 						break;
-					} else {// 非终结符
+					} else {// 非终结符，一般是第一个非终结符，或者之前的非终结符都可能为ε
 						// 添加依赖项
 						if (!rela.containsKey(t)) {
 							rela.put(t, new HashSet<String>());
@@ -153,6 +171,7 @@ public class First {
 	}
 
 	/**
+	 * 拓扑排序
 	 * 依赖于node节点的其他节点 本算法就是搜索出一个集合运算的顺序，回答这个问题：”哪个个集合先加入依赖集合中，哪个个后加，才不会出现遗漏“
 	 * 
 	 * @param rela
@@ -186,7 +205,7 @@ public class First {
 			dependby(s, his, rela, depend_list);
 		}
 		// 完成了所有的依赖才能够添加
-		depend_list.addLast(node);
+		depend_list.addFirst(node);
 	}
 
 	/**
@@ -238,29 +257,29 @@ public class First {
 		return false;// 如果可能，则一定在前面的查找中找到返回了。
 	}
 
-	/**
-	 * 推断字串是否为空
-	 * 
-	 * @param T
-	 * @return
-	 */
-	boolean inferStringEpsilon(String B) {
-		int index = 0;
-		while (index < B.length()) {
-			String t = getNextToken(B, index);
-			index += t.length();
-			if (!IsTerminal(t)) {// 非终结符
-				if (!_inferUnTermEpsilon(t)) {// 其中一个非终结符不可能为空则不可能为空
-					return false;
-				}
-			} else {// 终结符
-				if (!t.equals("ε")) {// 非ε终结符，则不可能为空
-					return false;
-				}
-			}
-		}
-		return true;// 如果不可能，则一定跳转到下次循环进行查找
-	}
+//	/**
+//	 * 推断字串是否为空
+//	 * 
+//	 * @param T
+//	 * @return
+//	 */
+//	boolean inferStringEpsilon(String B) {
+//		int index = 0;
+//		while (index < B.length()) {
+//			String t = getNextToken(B, index);
+//			index += t.length();
+//			if (!IsTerminal(t)) {// 非终结符
+//				if (!_inferUnTermEpsilon(t)) {// 其中一个非终结符不可能为空则不可能为空
+//					return false;
+//				}
+//			} else {// 终结符
+//				if (!t.equals("ε")) {// 非ε终结符，则不可能为空
+//					return false;
+//				}
+//			}
+//		}
+//		return true;// 如果不可能，则一定跳转到下次循环进行查找
+//	}
 
 	/**
 	 * 获取下一个符号

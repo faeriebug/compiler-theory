@@ -2,6 +2,7 @@ package PreAnTable;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -15,20 +16,21 @@ public class Follow {
 	/** 产生式 */
 	Map<String, String[]> pros;
 	First first = new First();
-
-	public void SetGrammar(String[] ps,String G) {
-		first.SetGrammar(ps);
+	
+	public void SetGrammar(Map<String, String[]> pros,String G){
+		this.pros=pros;
+		first.SetGrammar(pros);
 		rela = new HashMap<>();
 		follow_set = new HashMap<>();
-		pros = new HashMap<>();
-		for (String s : ps) {
-			String[] pr = s.split("->");
-			String[] rs = pr[1].split("[|]");
-			pros.put(pr[0], rs);
-			follow_set.put(pr[0], new HashSet<String>());
+		for (String s : pros.keySet()) {
+			follow_set.put(s, new HashSet<String>());
 		}
 		follow_set.get(G).add("#");
 		analyse();
+	}
+	
+	public void SetGrammar(String[] ps,String G) {
+		SetGrammar(PreProcess.Process(ps), G);
 	}
 
 	public Map<String, Set<String>> getFollowSet(){
@@ -74,6 +76,20 @@ public class Follow {
 				"F->(E)|i" };
 		f.SetGrammar(input,"E");
 		f.analyse();
+		Map<String, Set<String>> first_set=f.getFollowSet();
+		for (Entry<String, Set<String>> s : first_set.entrySet()) {// 遍历每一个非终结符
+			System.out.print("First("+s.getKey()+")={");
+			String ss;
+			for (Iterator<String> iterator = s.getValue().iterator(); iterator.hasNext();) {
+				ss=iterator.next();
+				System.out.print(ss);
+				if(iterator.hasNext()){
+					System.out.print(",");
+				}else{
+					System.out.println("}");
+				}
+			}
+		}
 	}
 
 	/**
