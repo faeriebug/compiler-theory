@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import PreAnTable.CommProcess.TokenProcesser;
+
 /**
  * 求first集
  * <p>
@@ -23,7 +25,7 @@ public class First {
 	Map<String, Set<String>> first_set;
 	/** 产生式 */
 	Map<String, String[]> pros;
-	/**记录某个非终结符是否为ε*/
+	/** 记录某个非终结符是否为ε */
 	Map<String, Boolean> isEpsilon;
 
 	public static void main(String[] args) {
@@ -32,16 +34,17 @@ public class First {
 				"F->(E)|i" };
 		f.SetGrammar(input);
 		f.analyse();
-		Map<String, Set<String>> first_set=f.getUnTermFirstSet();
+		Map<String, Set<String>> first_set = f.getUnTermFirstSet();
 		for (Entry<String, Set<String>> s : first_set.entrySet()) {// 遍历每一个非终结符
-			System.out.print("First("+s.getKey()+")={");
+			System.out.print("First(" + s.getKey() + ")={");
 			String ss;
-			for (Iterator<String> iterator = s.getValue().iterator(); iterator.hasNext();) {
-				ss=iterator.next();
+			for (Iterator<String> iterator = s.getValue().iterator(); iterator
+					.hasNext();) {
+				ss = iterator.next();
 				System.out.print(ss);
-				if(iterator.hasNext()){
+				if (iterator.hasNext()) {
 					System.out.print(",");
-				}else{
+				} else {
 					System.out.println("}");
 				}
 			}
@@ -49,13 +52,13 @@ public class First {
 	}
 
 	public void SetGrammar(String[] ps) {
-		SetGrammar(PreProcess.Process(ps));
+		SetGrammar(CommProcess.Prod(ps));
 	}
-	
-	public void SetGrammar(Map<String, String[]> pros){
+
+	public void SetGrammar(Map<String, String[]> pros) {
 		rela = new HashMap<>();
 		first_set = new HashMap<>();
-		this.pros=pros;
+		this.pros = pros;
 		isEpsilon = new HashMap<>();
 		for (String s : pros.keySet()) {
 			first_set.put(s, new HashSet<String>());
@@ -63,7 +66,7 @@ public class First {
 		}
 		analyse();
 	}
-	
+
 	/**
 	 * 获取first集
 	 * 
@@ -82,11 +85,10 @@ public class First {
 	public Set<String> getStringFirstSet(String pr) {
 		Set<String> fi = new HashSet<>();
 		Set<String> dep = new HashSet<>();
-		int index = 0;
-		while (index < pr.length()) {// 遍历产生式的每一个符号
-			String t = getNextToken(pr, index);
-			index += t.length();
-			if (IsTerminal(t)) {// 终结符
+		TokenProcesser tr = new TokenProcesser(pr);
+		while (tr.hasNextToken()) {
+			String t = tr.nextToken();
+			if (CommProcess.IsTerminal(t)) {// 终结符
 				fi.add(t);// 向first集合中添加元素
 				return fi;
 			} else {// 非终结符
@@ -94,7 +96,7 @@ public class First {
 				dep.add(t);// 此依赖于t
 				if (!inferUnTermEpsilon(t)) {// 此非终结符不可能为ε，不必再向下搜索了
 					break;
-				} else if (index >= pr.length()) {// 即最后一个非终结符，且可能为空
+				} else if (!tr.hasNextToken()) {// 即最后一个非终结符，且可能为空
 					fi.add("ε");
 				}
 			}
@@ -123,12 +125,12 @@ public class First {
 	private void analyse() {
 		for (Entry<String, String[]> prod : pros.entrySet()) {// 遍历每一个非终结符
 			for (String p : prod.getValue()) {// 遍历对应的每一个产生式
-				int index = 0;
-				while (index < p.length()) {// 遍历产生式的每一个符号
-					String t = getNextToken(p, index);
-					index += t.length();
-					if (IsTerminal(t)) {// 终结符
-						if(t.equals("ε") && index < p.length()){//t为ε，但不是最后一个终结符，所以不加入。
+				TokenProcesser tr = new TokenProcesser(
+						p);
+				while (tr.hasNextToken()) {
+					String t = tr.nextToken();
+					if (CommProcess.IsTerminal(t)) {// 终结符
+						if (t.equals("ε") && tr.hasNextToken()) {// t为ε，但不是最后一个终结符，所以不加入。
 							continue;
 						}
 						first_set.get(prod.getKey()).add(t);// 向first集合中添加元素
@@ -141,7 +143,7 @@ public class First {
 						rela.get(t).add(prod.getKey());// 此依赖于t
 						if (!_inferUnTermEpsilon(t)) {// 此非终结符不可能为ε，不必再向下搜索了
 							break;
-						} else if (index >= p.length()) {// 即最后一个非终结符，且可能为空
+						} else if (!tr.hasNextToken()) {// 即最后一个非终结符，且可能为空
 							first_set.get(prod.getKey()).add("ε");
 						}
 					}
@@ -171,8 +173,8 @@ public class First {
 	}
 
 	/**
-	 * 拓扑排序
-	 * 依赖于node节点的其他节点 本算法就是搜索出一个集合运算的顺序，回答这个问题：”哪个个集合先加入依赖集合中，哪个个后加，才不会出现遗漏“
+	 * 拓扑排序 依赖于node节点的其他节点
+	 * 本算法就是搜索出一个集合运算的顺序，回答这个问题：”哪个个集合先加入依赖集合中，哪个个后加，才不会出现遗漏“
 	 * 
 	 * @param rela
 	 * @return
@@ -235,11 +237,10 @@ public class First {
 		}
 		String[] pro = pros.get(T);
 		outer: for (String p : pro) {
-			int index = 0;
-			while (index < p.length()) {
-				String t = getNextToken(p, index);
-				index += t.length();
-				if (!IsTerminal(t)) {// 非终结符
+			TokenProcesser tr = new TokenProcesser(p);
+			while (tr.hasNextToken()) {
+				String t = tr.nextToken();
+				if (!CommProcess.IsTerminal(t)) {// 非终结符
 					if (!_inferUnTermEpsilon(t)) {// 其中一个非终结符不可能为空则不可能为空
 						continue outer;
 					}
@@ -257,60 +258,28 @@ public class First {
 		return false;// 如果可能，则一定在前面的查找中找到返回了。
 	}
 
-//	/**
-//	 * 推断字串是否为空
-//	 * 
-//	 * @param T
-//	 * @return
-//	 */
-//	boolean inferStringEpsilon(String B) {
-//		int index = 0;
-//		while (index < B.length()) {
-//			String t = getNextToken(B, index);
-//			index += t.length();
-//			if (!IsTerminal(t)) {// 非终结符
-//				if (!_inferUnTermEpsilon(t)) {// 其中一个非终结符不可能为空则不可能为空
-//					return false;
-//				}
-//			} else {// 终结符
-//				if (!t.equals("ε")) {// 非ε终结符，则不可能为空
-//					return false;
-//				}
-//			}
-//		}
-//		return true;// 如果不可能，则一定跳转到下次循环进行查找
-//	}
-
-	/**
-	 * 获取下一个符号
-	 * 
-	 * @param pr
-	 * @param start
-	 * @return
-	 */
-	public static String getNextToken(String pr, int start) {
-		char a = pr.charAt(start);
-		if ((a >= '!' && a <= '~') || a == 'ε') {
-			if (a >= 'A' && a <= 'Z') {// 如果是大写字母，则要考虑A'。
-				if (pr.length() > start + 1 && pr.charAt(start + 1) == '\'') {// 类似A'看为整体
-					return pr.substring(start, start + 2);
-				}
-			}
-			return pr.substring(start, start + 1);
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * 判断是否是终结符
-	 * 
-	 * @param t
-	 * @return
-	 */
-	public static boolean IsTerminal(String t) {
-		char a = t.charAt(0);
-		return !(a >= 'A' && a <= 'Z');
-	}
+	// /**
+	// * 推断字串是否为空
+	// *
+	// * @param T
+	// * @return
+	// */
+	// boolean inferStringEpsilon(String B) {
+	// int index = 0;
+	// while (index < B.length()) {
+	// String t = getNextToken(B, index);
+	// index += t.length();
+	// if (!IsTerminal(t)) {// 非终结符
+	// if (!_inferUnTermEpsilon(t)) {// 其中一个非终结符不可能为空则不可能为空
+	// return false;
+	// }
+	// } else {// 终结符
+	// if (!t.equals("ε")) {// 非ε终结符，则不可能为空
+	// return false;
+	// }
+	// }
+	// }
+	// return true;// 如果不可能，则一定跳转到下次循环进行查找
+	// }
 
 }

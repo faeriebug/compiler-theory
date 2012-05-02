@@ -16,7 +16,7 @@ public class PreAnTableConstruct {
 	Follow follow = new Follow();
 
 	public void SetGrammar(String[] ps, String G) {
-		pros = PreProcess.Process(ps);
+		pros = CommProcess.Prod(ps);
 		first.SetGrammar(pros);
 		follow.SetGrammar(pros, G);
 		follow_set=follow.getFollowSet();
@@ -25,6 +25,7 @@ public class PreAnTableConstruct {
 	public Map<String, String> getM(){
 		return M;
 	}
+	
 	void analyse() {
 		M=new HashMap<>();
 		for (Entry<String, String[]> pr : pros.entrySet()) {
