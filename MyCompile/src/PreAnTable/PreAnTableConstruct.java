@@ -5,38 +5,46 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import PreAnTable.CommProcess.Grammar;
+
 public class PreAnTableConstruct {
 	/** follow集合 */
-	Map<String, Set<String>> follow_set;
+	Map<Integer, Set<Integer>> follow_set;
 	/** M */
 	Map<String, String> M;
-	/** 产生式 */
-	Map<String, String[]> pros;
 	First first = new First();
 	Follow follow = new Follow();
+	Grammar G;
 
-	public void SetGrammar(String[] ps, String G) {
-		pros = CommProcess.Prod(ps);
-		first.SetGrammar(pros);
-		follow.SetGrammar(pros, G);
-		follow_set=follow.getFollowSet();
+	public void SetGrammar(Grammar G) {
+		this.G = G;
+		first.SetGrammar(G);
+		follow.SetGrammar(G);
+		follow_set = follow.getFollowSet();
 		analyse();
 	}
-	public Map<String, String> getM(){
+
+	public Map<String, String> getM() {
 		return M;
 	}
-	
+
 	void analyse() {
-		M=new HashMap<>();
-		for (Entry<String, String[]> pr : pros.entrySet()) {
-			for (String p : pr.getValue()) {// 遍历对应的每一个产生式
-				for (String a : first.getStringFirstSet(p)) {
-					if (a.equals("ε")) {
-						for (String b : follow_set.get(pr.getKey())) {
-							M.put(pr.getKey() + "," + b, pr.getKey() + "->" + p);
+		M = new HashMap<>();
+		for (int prod = 0;prod < G.prod.length; prod++) {// 遍历每一个非终结符
+			for (Integer[] pr : G.prod[prod]) {// 遍历对应的每一个产生式
+				String tmp = "";
+				for (Integer tt : pr) {
+					tmp += (tt < 0 ? G.Ts[-tt] : G.NTs[tt]);
+				}
+				for (Integer a : first.getStringFirstSet(pr, 0)) {
+					if (a.equals(CommProcess.Epsilon)) {
+						for (Integer b : follow_set.get(prod)) {
+
+							M.put(G.NTs[prod] + "," + G.Ts[b],
+									G.NTs[prod] + "->" + tmp);
 						}
 					} else {
-						M.put(pr.getKey() + "," + a, pr.getKey() + "->" + p);
+						M.put(G.NTs[prod] + "," + G.Ts[a], G.NTs[prod] + "->" + tmp);
 					}
 				}
 			}
@@ -47,13 +55,14 @@ public class PreAnTableConstruct {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String[] input = { "E->TE'", "E'->+TE'|ε", "T->FT'", "T'->*FT'|ε",
-		"F->(E)|i" };
-		PreAnTableConstruct p=new PreAnTableConstruct();
-		p.SetGrammar(input, "E");
-		Map<String, String> M=p.getM();
+		String[] input = { "<E>-><T><E'>", "<E'>->+<T><E'>| ε", "<T>-><F><T'>",
+				"<T'>->*<F><T'>| ε", "<F>->(<E>) | i" };
+		Grammar G = CommProcess.ProcessProd(input,false);
+		PreAnTableConstruct p = new PreAnTableConstruct();
+		p.SetGrammar(G);
+		Map<String, String> M = p.getM();
 		for (String s : M.keySet()) {
-			System.out.println("M["+s+"]="+M.get(s));
+			System.out.println("M[" + s + "]=" + M.get(s));
 		}
 	}
 
