@@ -12,8 +12,6 @@ import PreAnTable.CommProcess.Grammar;
 
 /**
  * 求first集
- * <p>
- * 基于消除了公共左因子和左递归的文法
  * 
  * @author WuyaMony
  * 
@@ -26,11 +24,12 @@ public class First {
 	/** 记录某个非终结符是否为ε */
 	Map<Integer, Boolean> isEpsilon;
 	Grammar G;
+
 	public static void main(String[] args) {
 		First f = new First();
-		String[] input = { "<E>-><T><E'>", "<E'>->+<T><E'>| ε",
-				"<T>-><F><T'>","<T'>->*<F><T'>| ε","<F>->(<E>) | i" };
-		Grammar G=CommProcess.ProcessProd(input,false);
+		String[] input = { "<E>→<T><E'>", "<E'>→+<T><E'>| ε", "<T>→<F><T'>",
+				"<T'>→*<F><T'>| ε", "<F>→(<E>) | i" };
+		Grammar G = CommProcess.ProcessProd(input, false);
 		f.SetGrammar(G);
 		f.analyse();
 		Map<Integer, Set<Integer>> first_set = f.getUnTermFirstSet();
@@ -40,7 +39,7 @@ public class First {
 			for (Iterator<Integer> iterator = s.getValue().iterator(); iterator
 					.hasNext();) {
 				ss = iterator.next();
-				System.out.print(G.Ts[ss]);
+				System.out.print(G.Ts[-ss]);
 				if (iterator.hasNext()) {
 					System.out.print(",");
 				} else {
@@ -51,7 +50,7 @@ public class First {
 	}
 
 	public void SetGrammar(Grammar G) {
-		this.G=G;
+		this.G = G;
 		rela = new HashMap<>();
 		first_set = new HashMap<>();
 		isEpsilon = new HashMap<>();
@@ -77,19 +76,19 @@ public class First {
 	 * @param pr
 	 * @return
 	 */
-	public Set<Integer> getStringFirstSet(Integer[] pr,int start) {
+	public Set<Integer> getStringFirstSet(Integer[] pr, int start) {
 		Set<Integer> fi = new HashSet<>();
 		Set<Integer> dep = new HashSet<>();
-		for (int t=start;t<pr.length;t++) {
-			if(pr[t]<0){// 终结符
-				fi.add(-pr[t]);// 向first集合中添加元素
+		for (int t = start; t < pr.length; t++) {
+			if (pr[t] < 0) {// 终结符
+				fi.add(pr[t]);// 向first集合中添加元素
 				return fi;
-			}else{// 非终结符
-				// 添加依赖项
+			} else {// 非终结符
+					// 添加依赖项
 				dep.add(pr[t]);// 此依赖于t
 				if (!inferUnTermEpsilon(pr[t])) {// 此非终结符不可能为ε，不必再向下搜索了
 					break;
-				} else if (t==pr.length-1) {// 即最后一个非终结符，且可能为空
+				} else if (t == pr.length - 1) {// 即最后一个非终结符，且可能为空
 					fi.add(CommProcess.Epsilon);
 				}
 			}
@@ -116,24 +115,26 @@ public class First {
 	 * @return
 	 */
 	private void analyse() {
-		for (int prod = 0;prod < G.prod.length; prod++) {// 遍历每一个非终结符
+		for (int prod = 0; prod < G.prod.length; prod++) {// 遍历每一个非终结符
 			for (Integer[] p : G.prod[prod]) {// 遍历对应的每一个产生式
-				for (int i=0;i<p.length;i++) {
-					if(p[i]<0){// 终结符
-						if (p[i]==CommProcess.Epsilon && i!=p.length-1) {// t为ε，但不是最后一个终结符，所以不加入。
+				for (int i = 0; i < p.length; i++) {
+					if (p[i] < 0) {// 终结符
+						if (p[i] == CommProcess.Epsilon && i != p.length - 1) {// t为ε，但不是最后一个终结符，所以不加入。
 							continue;
 						}
-						first_set.get(prod).add(-p[i]);// 向first集合中添加元素
+						first_set.get(prod).add(p[i]);// 向first集合中添加元素
 						break;
-					}else{// 非终结符，一般是第一个非终结符，或者之前的非终结符都可能为ε
-						// 添加依赖项
-						if (!rela.containsKey(p[i])) {
-							rela.put(p[i], new HashSet<Integer>());
+					} else {// 非终结符，一般是第一个非终结符，或者之前的非终结符都可能为ε
+						if (prod != p[i]) {//不是T→TF形式
+							// 添加依赖项
+							if (!rela.containsKey(p[i])) {
+								rela.put(p[i], new HashSet<Integer>());
+							}
+							rela.get(p[i]).add(prod);// 此依赖于t
 						}
-						rela.get(p[i]).add(prod);// 此依赖于t
-						if (!_inferUnTermEpsilon(p[i])) {// 此非终结符不可能为ε，不必再向下搜索了
+						if (!_inferUnTermEpsilon(p[i],null)) {// 此非终结符不可能为ε，不必再向下搜索了
 							break;
-						} else if (i==p.length-1) {// 即最后一个非终结符，且可能为空
+						} else if (i == p.length - 1) {// 即最后一个非终结符，且可能为空
 							first_set.get(prod).add(CommProcess.Epsilon);
 						}
 					}
@@ -217,7 +218,10 @@ public class First {
 	 * @param T
 	 * @return
 	 */
-	private boolean _inferUnTermEpsilon(int T) {
+	private boolean _inferUnTermEpsilon(int T,Set<Integer> his) {
+		if(his!=null && his.contains(T)){//访问过的不再访问
+			return false;
+		}
 		if (isEpsilon.get(T) != null) {
 			return isEpsilon.get(T);
 		}
@@ -225,15 +229,18 @@ public class First {
 			isEpsilon.put(T, true);
 			return true;
 		}
+		if(his==null)
+			his=new HashSet<Integer>();
+		his.add(T);
 		Integer[][] pro = G.prod[T];
 		outer: for (Integer[] p : pro) {
 			for (Integer t : p) {
-				if(t<0){// 终结符
-					if (t!=CommProcess.Epsilon) {// 非ε终结符，则不可能为空
+				if (t < 0) {// 终结符
+					if (t != CommProcess.Epsilon) {// 非ε终结符，则不可能为空
 						continue outer;
 					}
-				}else{// 非终结符
-					if (!_inferUnTermEpsilon(t)) {// 其中一个非终结符不可能为空则不可能为空
+				} else {// 非终结符
+					if (!_inferUnTermEpsilon(t,his)) {// 其中一个非终结符不可能为空则不可能为空
 						continue outer;
 					}
 				}

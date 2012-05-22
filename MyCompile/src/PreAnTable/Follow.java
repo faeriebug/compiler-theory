@@ -23,8 +23,8 @@ public class Follow {
 	 */
 	public static void main(String[] args) {
 		Follow f = new Follow();
-		String[] input = { "<E>-><T><E'>", "<E'>->+<T><E'>| ¦Å",
-				"<T>-><F><T'>","<T'>->*<F><T'>| ¦Å","<F>->(<E>) | i"};
+		String[] input = { "<E>¡ú<T><E'>", "<E'>¡ú+<T><E'>| ¦Å",
+				"<T>¡ú<F><T'>","<T'>¡ú*<F><T'>| ¦Å","<F>¡ú(<E>) | i"};
 		Grammar G=CommProcess.ProcessProd(input,false);
 		f.SetGrammar(G);
 		f.analyse();
@@ -35,7 +35,7 @@ public class Follow {
 			for (Iterator<Integer> iterator = s.getValue().iterator(); iterator
 					.hasNext();) {
 				ss = iterator.next();
-				System.out.print(G.Ts[ss]);
+				System.out.print(G.Ts[-ss]);
 				if (iterator.hasNext()) {
 					System.out.print(",");
 				} else {
@@ -53,7 +53,7 @@ public class Follow {
 		for (int i = 0; i < G.NTs.length; i++) {
 			follow_set.put(i, new HashSet<Integer>());
 		}
-		follow_set.get(G.StartNT).add(CommProcess.Sign);
+		follow_set.get(G.StartNT).add(-CommProcess.Sign);
 		analyse();
 	}
 

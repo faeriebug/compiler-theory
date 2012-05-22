@@ -11,13 +11,13 @@ import java.util.Map.Entry;
  * <p>
  * 1. 输入的文法中"<>"内部表示的是非终结符
  * <p>
- * 2. "->"表示推导
+ * 2. "→"表示推导
  * <p>
  * 3. 空格分隔的其他符号视为整体的一个终结符，如“begin”视为一个终结符，“b e g i n”视为5个终结符。
  * <p>
  * 4. 空格在分析的过程中会被过滤掉，如果要输入空格本身，则需要加"\"，如“\ ”。
  * <p>
- * 5. 同理，如果要输入“<,>,->,|”中的任何一个都需要加“\”，如“\<”,“\>”，“\->”，“\|”
+ * 5. 同理，如果要输入“<,>,→,|”中的任何一个都需要加“\”，如“\<”,“\>”，“\→”，“\|”
  * 
  * @author WuyaMony
  * 
@@ -109,16 +109,17 @@ public class CommProcess {
 				return "|";
 			case ' ':
 				return " ";
-			case '-':
-				if (endOfString()) {
-					return "-";
-				} else {
-					if (pr.charAt(start + 1) == '>'){
-						start++;
-						return "->";
-					}else
-						return "-";
-				}
+			case '→':
+				return "→";
+				// if (endOfString()) {
+				// return "-";
+				// } else {
+				// if (pr.charAt(start + 1) == '>'){
+				// start++;
+				// return "->";
+				// }else
+				// return "-";
+				// }
 			default:
 				return null;
 			}
@@ -163,12 +164,9 @@ public class CommProcess {
 				return nextToken();
 			case '<': // 尝试获取非终结符
 				return nextNT();
-			case '-':
-				if (!endOfString() && pr.charAt(start++) == '>') // 推出符号"->"
-					return new token("->", INFER);
-				else
-					// 出错
-					return new token(null, null);
+			case '→':
+				// 推出符号"->"
+				return new token("->", INFER);
 			case '|':
 				return new token("|", OR);
 			default:
@@ -206,75 +204,73 @@ public class CommProcess {
 				System.out.println("Error: line " + line + " 第一个符号必须是非终结符\n\t"
 						+ s);
 				return null;
-			} else {
-				if (!nts.containsKey(k.str)) {
-					nts.put(k.str, prodHelp.size());
-					if (k.str.length() > longest.length())
-						longest = k.str;
-					prodHelp.add(new ArrayList<Integer[]>());
-				}
-				if (!hasStart) {
-					hasStart = true;
-					startNT = nts.get(k.str);
-				}
+			}
+			if (!nts.containsKey(k.str)) {
+				nts.put(k.str, prodHelp.size());
+				if (k.str.length() > longest.length())
+					longest = k.str;
+				prodHelp.add(new ArrayList<Integer[]>());
+			}
+			if (!hasStart) {
+				hasStart = true;
+				startNT = nts.get(k.str);
+			}
+			t = tp.nextToken();
+			if (t == null || t.type == null || !t.type.equals(INFER)) {// 出错，第二个符号必须是推出符号
+				System.out.println("Error: line " + line + " 第二个符号必须是推出符号\n\t"
+						+ s);
+				return null;
+			}
+			boolean must = true;
+			ArrayList<Integer> tmp = new ArrayList<>();
+			while (true) {
 				t = tp.nextToken();
-				if (t == null || t.type == null || !t.type.equals(INFER)) {// 出错，第二个符号必须是推出符号
-					System.out.println("Error: line " + line
-							+ " 第二个符号必须是推出符号\n\t" + s);
-					return null;
-				} else {
-					boolean must = true;
-					ArrayList<Integer> tmp = new ArrayList<>();
-					while (true) {
-						t = tp.nextToken();
-						if (must) {
-							if (t == null || t.type == null
-									|| !(t.type.equals(NT) || t.type.equals(T))) {// 出错，第三个符号必须是非终结符或者终结符
-								System.out
-										.println("Error: line "
-												+ line
-												+ " :第三个符号必须是非终结符或者终结符或者|之后必须有非终结符或终结符\n\t"
-												+ s);
-								return null;
-							}
-						} else {
-							if (t == null) {// 到达字符串末尾
-								prodHelp.get(nts.get(k.str)).add(
-										tmp.toArray(new Integer[tmp.size()]));
-								continue outer;
-							} else if (t.type == null || t.type.equals(INFER)) {// 出错
-								if (t.type == null)
-									System.out.println("Error: line " + line
-											+ " :符号不合法\n\t" + s);
-								else
-									System.out.println("Error: line " + line
-											+ " :不应该是推出符号\n\t" + s);
-								return null;
-							} else if (t.type.equals(OR)) {// 后继必须有其他符号
-								must = true;
-								prodHelp.get(nts.get(k.str)).add(
-										tmp.toArray(new Integer[tmp.size()]));
-								tmp = new ArrayList<>();
-								continue;
-							}
-						}
-						must = false;
-						// 终结符或者非终结符，加入
-						if (t.type.equals(NT)) {
-							if (!nts.containsKey(t.str)) {
-								if (t.str.length() > longest.length())
-									longest = t.str;
-								nts.put(t.str, prodHelp.size());
-								prodHelp.add(new ArrayList<Integer[]>());
-							}
-							tmp.add(nts.get(t.str));
-						} else {
-							if (!ts.containsKey(t.str)) {
-								ts.put(t.str, ts.size() + 1);
-							}
-							tmp.add(-ts.get(t.str));// 终结符为负号
-						}
+				if (must) {
+					if (t == null || t.type == null
+							|| !(t.type.equals(NT) || t.type.equals(T))) {// 出错，第三个符号必须是非终结符或者终结符
+						System.out
+								.println("Error: line "
+										+ line
+										+ " :第三个符号必须是非终结符或者终结符或者|之后必须有非终结符或终结符\n\t"
+										+ s);
+						return null;
 					}
+				} else {
+					if (t == null) {// 到达字符串末尾
+						prodHelp.get(nts.get(k.str)).add(
+								tmp.toArray(new Integer[tmp.size()]));
+						continue outer;
+					} else if (t.type == null || t.type.equals(INFER)) {// 出错
+						if (t.type == null)
+							System.out.println("Error: line " + line
+									+ " :符号不合法\n\t" + s);
+						else
+							System.out.println("Error: line " + line
+									+ " :不应该是推出符号\n\t" + s);
+						return null;
+					} else if (t.type.equals(OR)) {// 后继必须有其他符号
+						must = true;
+						prodHelp.get(nts.get(k.str)).add(
+								tmp.toArray(new Integer[tmp.size()]));
+						tmp = new ArrayList<>();
+						continue;
+					}
+				}
+				must = false;
+				// 终结符或者非终结符，加入
+				if (t.type.equals(NT)) {
+					if (!nts.containsKey(t.str)) {
+						if (t.str.length() > longest.length())
+							longest = t.str;
+						nts.put(t.str, prodHelp.size());
+						prodHelp.add(new ArrayList<Integer[]>());
+					}
+					tmp.add(nts.get(t.str));
+				} else {
+					if (!ts.containsKey(t.str)) {
+						ts.put(t.str, ts.size() + 1);
+					}
+					tmp.add(-ts.get(t.str));// 终结符为负号
 				}
 			}
 		}
@@ -303,12 +299,12 @@ public class CommProcess {
 	}
 
 	public static void main(String[] args) {
-		String[] ps = new String[] { "<E>-><T><E'>", "<E'>->+<T><E'>| ε",
-				"<T>-><F><T'>", "<T'>->*<F><T'>| ε", "<F>->(<E>) | i" };
+		String[] ps = new String[] { "<E>→<T><E'>", "<E'>→+<T><E'>| ε",
+				"<T>→<F><T'>", "<T'>→*<F><T'>| ε", "<F>→(<E>) | i" };
 		Grammar p = CommProcess.ProcessProd(ps, true);
 		System.out.println("StartNT=" + p.NTs[p.StartNT]);
 		for (int i = 0; i < p.prod.length; i++) {
-			System.out.print("<" + p.NTs[i] + ">->");
+			System.out.print("<" + p.NTs[i] + ">→");
 			for (Integer[] j : p.prod[i]) {
 				for (Integer k : j) {
 					if (k < 0) {// 终结符
