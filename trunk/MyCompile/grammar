@@ -1,0 +1,38 @@
+<primary-expression>¡ú identifier | identifier ( <argument-expression-list> ) | constant | ( <expression> )
+<argument-expression-list>¡ú ¦Å | <assignment-expression> | <argument-expression-list > , <assignment-expression >
+<multiplicative-expression>¡ú <primary-expression> | <multiplicative-expression> * <primary-expression>  |  <multiplicative-expression> / <primary-expression>
+<additive-expression>¡ú<multiplicative-expression> | <additive-expression> + <multiplicative-expression> | <additive-expression> - <multiplicative-expression>
+<relational-expression>¡ú<additive-expression> | <relational-expression> \< <additive-expression> | <relational-expression> \> <additive-expression> | <relational-expression> \<= <additive-expression> | <relational-expression> \>= <additive-expression>
+<equality-expression>¡ú<relational-expression> | <equality-expression> == <relational-expression> | <equality-expression> != <relational-expression>
+<assignment-expression>¡ú<equality-expression> | <primary-expression> = <assignment-expression>
+<expression>¡ú<assignment-expression>
+
+<declaration>¡ú<variable-declaration> | <function-declaration>
+<variable-declaration>¡ú<type-specifier><init-declarator-list>
+<type-specifier>¡úint
+<init-declarator-list>¡ú<init-declarator> | <init-declarator-list> , <init-declarator>
+<init-declarator>¡úidentifier | identifier = <initializer>
+<initializer>¡ú<assignment-expression>
+<function-declaration>¡ú<type-specifier><function-declarator>
+<function-declarator>¡úidentifier ( <parameter-list> )
+<parameter-list>¡ú<parameter> | <parameter-list> , <parameter>
+<parameter>¡ú<type-specifier> identifier
+
+<statement>¡ú<declaration-statement> | <compound-statement> | <expression-statement> | <selection-statement> | <iteration-statement> | <jump-statement> 
+<declaration-statement>¡ú<declaration> ;
+<compound-statement>¡ú{ <statement-list> }
+<statement-list>¡ú<statement> | <block-item-list><statement>
+<expression-statement>¡ú; | <expression> ;
+<selection-statement>¡úif ( <expression> ) <statement> | if ( <expression> ) <statement> else <statement>
+<iteration-statement>¡úwhile ( <expression> ) <statement>
+<jump-statement>¡úcontinue ; | break ; | return ; | return <expression>;
+
+<function-definition>¡ú< function-declaration><compound-statement>
+
+<program>¡ú<program-part> | <program><program-part>
+<program-part>¡ú<declaration-statement> | <function-definition>
+
+<program'>¡ú<program>
+
+
+
