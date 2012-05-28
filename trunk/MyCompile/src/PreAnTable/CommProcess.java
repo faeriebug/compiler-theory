@@ -18,7 +18,7 @@ import java.util.Map.Entry;
  * 4. 空格在分析的过程中会被过滤掉，如果要输入空格本身，则需要加"\"，如“\ ”。
  * <p>
  * 5. 同理，如果要输入“<,>,→,|”中的任何一个都需要加“\”，如“\<”,“\>”，“\→”，“\|”
- * 
+ * 6.非终结符编号0,1,2...终结符-1,-2,-3...
  * @author WuyaMony
  * 
  */
@@ -166,7 +166,7 @@ public class CommProcess {
 				return nextNT();
 			case '→':
 				// 推出符号"->"
-				return new token("->", INFER);
+				return new token("→", INFER);
 			case '|':
 				return new token("|", OR);
 			default:
