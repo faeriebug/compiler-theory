@@ -11,7 +11,7 @@ import java.util.Map;
 
 import PreAnTable.CommProcess.Grammar;
 
-public class LR_0 {
+public class SLR_1 {
 	/** 项目 */
 	private class item {
 		// int itemnumber;
@@ -106,7 +106,7 @@ public class LR_0 {
 		// "<关系运算符>→ op",
 		// "<循环语句>→while<条件表达式>begin<执行语句表>end", };
 		Grammar p = CommProcess.ProcessProd(ps, false);
-		LR_0 l = new LR_0();
+		SLR_1 l = new SLR_1();
 		l.SetGrammar(p);
 		// HashMap<Itemset, HashMap<Integer, Itemset>> go = l.getGo();
 		// for (Entry<Itemset, HashMap<Integer, Itemset>> en : go.entrySet()) {
@@ -163,10 +163,10 @@ public class LR_0 {
 				item i = allitems[p];
 				Integer[] pr = GG.prod[i.unterm][i.proID];
 				if (i.start < pr.length) {// A→α·aβ ,A→α·Bβ
-					if (pr[i.start] < 0) {// 终结符
+					if (pr[i.start] < 0) {// 终结符,A→α·aβ
 						tbl[Ii.id][pr[i.start] + base] = "s"
 								+ go.get(Ii).get(pr[i.start]).id;
-					} else {// 非终结符
+					} else {// 非终结符,A→α·Bβ
 						tbl[Ii.id][pr[i.start] + base] = Integer.toString(go
 								.get(Ii).get(pr[i.start]).id);
 					}
@@ -236,8 +236,8 @@ public class LR_0 {
 					if (!goTmp.containsKey(pr[ii.start])) {
 						goTmp.put(pr[ii.start], new Itemset());
 					}
-					Itemset itmp = goTmp.get(pr[ii.start]);
-					itmp.core.add(i + 1);
+//					Itemset itmp = goTmp.get(pr[ii.start]);
+					goTmp.get(pr[ii.start]).core.add(i + 1);
 				}
 			}
 			for (Integer k : goTmp.keySet()) {
@@ -281,11 +281,11 @@ public class LR_0 {
 		if (ntClosure.containsKey(NT)) {
 			return ntClosure.get(NT);
 		} else {
-			HashSet<Integer> ui = new HashSet<Integer>();
 			if (has == null) {
 				has = new HashSet<Integer>();
 				has.add(NT);
 			}
+			HashSet<Integer> ui = new HashSet<Integer>();
 			for (Integer ii : NTBeginItem.get(NT)) {
 				ui.add(ii);
 				item i = allitems[ii];
