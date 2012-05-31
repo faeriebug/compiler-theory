@@ -111,15 +111,6 @@ public class CommProcess {
 				return " ";
 			case '¡ú':
 				return "¡ú";
-				// if (endOfString()) {
-				// return "-";
-				// } else {
-				// if (pr.charAt(start + 1) == '>'){
-				// start++;
-				// return "->";
-				// }else
-				// return "-";
-				// }
 			default:
 				return null;
 			}

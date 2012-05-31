@@ -148,11 +148,6 @@ public class SLR_1 {
 		foll.SetGrammar(GG);
 		String[][] tbl = new String[ccsi.size()][GG.Ts.length + GG.NTs.length
 				- 1];
-//		for (int i = 0; i < tbl.length; i++) {
-//			for (int j = 0; j < tbl[i].length; j++) {
-//				tbl[i][j]="";
-//			}
-//		}
 		int base = GG.Ts.length - 1;
 		for (Itemset Ii : ccsi.keySet()) {
 			for (Integer p : Ii.items) {
@@ -236,7 +231,6 @@ public class SLR_1 {
 					if (!goTmp.containsKey(pr[ii.start])) {
 						goTmp.put(pr[ii.start], new Itemset());
 					}
-//					Itemset itmp = goTmp.get(pr[ii.start]);
 					goTmp.get(pr[ii.start]).core.add(i + 1);
 				}
 			}
