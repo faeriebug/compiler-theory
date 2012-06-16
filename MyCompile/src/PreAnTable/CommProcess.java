@@ -7,18 +7,18 @@ import java.util.Map.Entry;
 
 /**
  * <p>
- * ÎÄ·¨ÊäÈëµÄÔ¤´¦Àí
+ * ï¿½Ä·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½ï¿½ï¿½
  * <p>
- * 1. ÊäÈëµÄÎÄ·¨ÖÐ"<>"ÄÚ²¿±íÊ¾µÄÊÇ·ÇÖÕ½á·û
+ * 1. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½"<>"ï¿½Ú²ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Õ½ï¿½ï¿½
  * <p>
- * 2. "¡ú"±íÊ¾ÍÆµ¼
+ * 2. "ï¿½ï¿½"ï¿½ï¿½Ê¾ï¿½Æµï¿½
  * <p>
- * 3. ¿Õ¸ñ·Ö¸ôµÄÆäËû·ûºÅÊÓÎªÕûÌåµÄÒ»¸öÖÕ½á·û£¬Èç¡°begin¡±ÊÓÎªÒ»¸öÖÕ½á·û£¬¡°b e g i n¡±ÊÓÎª5¸öÖÕ½á·û¡£
+ * 3. ï¿½Õ¸ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ç¡°beginï¿½ï¿½ï¿½ï¿½ÎªÒ»ï¿½ï¿½ï¿½Õ½ï¿½ï¿½b e g i nï¿½ï¿½ï¿½ï¿½Îª5ï¿½ï¿½ï¿½Õ½ï¿½ï¿½
  * <p>
- * 4. ¿Õ¸ñÔÚ·ÖÎöµÄ¹ý³ÌÖÐ»á±»¹ýÂËµô£¬Èç¹ûÒªÊäÈë¿Õ¸ñ±¾Éí£¬ÔòÐèÒª¼Ó"\"£¬Èç¡°\ ¡±¡£
+ * 4. ï¿½Õ¸ï¿½ï¿½Ú·ï¿½ï¿½ï¿½ï¿½Ä¹ï¿½ï¿½ï¿½Ð»á±»ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Õ¸ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½"\"ï¿½ï¿½ï¿½ç¡°\ ï¿½ï¿½ï¿½ï¿½
  * <p>
- * 5. Í¬Àí£¬Èç¹ûÒªÊäÈë¡°<,>,¡ú,|¡±ÖÐµÄÈÎºÎÒ»¸ö¶¼ÐèÒª¼Ó¡°\¡±£¬Èç¡°\<¡±,¡°\>¡±£¬¡°\¡ú¡±£¬¡°\|¡±
- * 6.·ÇÖÕ½á·û±àºÅ0,1,2...ÖÕ½á·û-1,-2,-3...
+ * 5. Í¬ï¿½?ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ë¡°<,>,ï¿½ï¿½,|ï¿½ï¿½ï¿½Ðµï¿½ï¿½Îºï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½Ó¡ï¿½\ï¿½ï¿½ï¿½ï¿½ï¿½ç¡°\<ï¿½ï¿½,ï¿½ï¿½\>ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\ï¿½ï¿½ï¿½ï¿½\|ï¿½ï¿½
+ * 6.ï¿½ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ï¿½0,1,2...ï¿½Õ½ï¿½ï¿½-1,-2,-3...
  * @author WuyaMony
  * 
  */
@@ -71,7 +71,7 @@ public class CommProcess {
 		}
 
 		/**
-		 * ÏÂÒ»¸ö·ÇÖÕ½á·û
+		 * ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Õ½ï¿½ï¿½
 		 * 
 		 * @param t
 		 * @return
@@ -80,20 +80,20 @@ public class CommProcess {
 			token t = new token();
 			char b = 0;
 			StringBuilder sb = new StringBuilder();
-			while (!endOfString() && (b = pr.charAt(start++)) != '>') {// ×¢Òâ´Ë²¿·Ö£¬¼´Ê¹ÊäÈëµÄÊÇ¿Õ¸ñÒ²²»»á¹ýÂË£¡
+			while (!endOfString() && (b = pr.charAt(start++)) != '>') {// ×¢ï¿½ï¿½Ë²ï¿½ï¿½Ö£ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿Õ¸ï¿½Ò²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½
 				sb.append(b);
 			}
-			if (b == '>' && sb.length() != 0) {// Õý³£½áÊø
+			if (b == '>' && sb.length() != 0) {// ï¿½ï¿½ï¿½ï¿½ï¿½
 				t.str = sb.toString();
 				t.type = NT;
 				return t;
-			} else {// Òì³£½áÊø
+			} else {// ï¿½ì³£ï¿½ï¿½ï¿½ï¿½
 				return new token(null, null);
 			}
 		}
 
 		/**
-		 * ÏÂÒ»¸ö×ªÒå×Ö·û
+		 * ï¿½ï¿½Ò»ï¿½ï¿½×ªï¿½ï¿½ï¿½Ö·ï¿½
 		 */
 		private String nextSlash() {
 			if (endOfString())
@@ -109,8 +109,8 @@ public class CommProcess {
 				return "|";
 			case ' ':
 				return " ";
-			case '¡ú':
-				return "¡ú";
+			case 'â†’':
+				return "â†’";
 			default:
 				return null;
 			}
@@ -129,7 +129,7 @@ public class CommProcess {
 					String s = nextSlash();
 					if (s != null) {
 						sb.append(s);
-					} else {// ³ö´í
+					} else {// ï¿½ï¿½ï¿½ï¿½
 						return new token(null, null);
 					}
 				} else {
@@ -143,21 +143,21 @@ public class CommProcess {
 		}
 
 		/**
-		 * »ñÈ¡ÏÂÒ»¸ö×Ö·û
+		 * ï¿½ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö·ï¿½
 		 * 
-		 * @return Ã»ÓÐÏÂÒ»¸ö×Ö·û»òÕß×Ö·û²»ÔÚÓÐÐ§·¶Î§ÄÚÔò·µ»Ønull
+		 * @return Ã»ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½Î§ï¿½ï¿½ï¿½ò·µ»ï¿½null
 		 */
 		public token nextToken() {
 			if (endOfString())
-				return null;// µ½´ï×Ö·û´®Ä©Î²
+				return null;// ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½Ä©Î²
 			switch (pr.charAt(start++)) {
 			case ' ':
 				return nextToken();
-			case '<': // ³¢ÊÔ»ñÈ¡·ÇÖÕ½á·û
+			case '<': // ï¿½ï¿½ï¿½Ô»ï¿½È¡ï¿½ï¿½ï¿½Õ½ï¿½ï¿½
 				return nextNT();
-			case '¡ú':
-				// ÍÆ³ö·ûºÅ"->"
-				return new token("¡ú", INFER);
+			case 'â†’':
+				// ï¿½Æ³ï¿½ï¿½ï¿½ï¿½"->"
+				return new token("â†’", INFER);
 			case '|':
 				return new token("|", OR);
 			default:
@@ -167,7 +167,7 @@ public class CommProcess {
 	}
 
 	/**
-	 * Éú³É²úÉúÊ½£¬²¢×Ô¶¯±àºÅ£¬Îª·ÇÖÕ½á·ûºÍÖÕ½á·û±àºÅ
+	 * ï¿½ï¿½É²ï¿½ï¿½ï¿½Ê½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½ï¿½ï¿½Å£ï¿½Îªï¿½ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ï¿½
 	 * 
 	 * @param ps
 	 * @return
@@ -177,7 +177,7 @@ public class CommProcess {
 		Map<String, Integer> ts = new HashMap<>();
 		Integer[][][] prod;
 		ArrayList<ArrayList<Integer[]>> prodHelp = new ArrayList<>();
-		ts.put("¦Å", Epsilon);
+		ts.put("Îµ", Epsilon);
 		ts.put("#", Sign);
 		TokenProcesser tp;
 		token k, t;
@@ -189,10 +189,10 @@ public class CommProcess {
 			line++;
 			tp = new TokenProcesser(s);
 			k = tp.nextToken();
-			if (k == null)// µ½´ï×Ö·û´®Ä©Î²
+			if (k == null)// ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½Ä©Î²
 				continue;
-			if (k.type == null || !k.type.equals(NT)) {// ³ö´í£¬µÚÒ»¸ö·ûºÅ±ØÐëÊÇ·ÇÖÕ½á·û
-				System.out.println("Error: line " + line + " µÚÒ»¸ö·ûºÅ±ØÐëÊÇ·ÇÖÕ½á·û\n\t"
+			if (k.type == null || !k.type.equals(NT)) {// ï¿½ï¿½ï¿½?ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Å±ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Õ½ï¿½ï¿½
+				System.out.println("Error: line " + line + " ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Å±ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Õ½ï¿½ï¿½\n\t"
 						+ s);
 				return null;
 			}
@@ -207,8 +207,8 @@ public class CommProcess {
 				startNT = nts.get(k.str);
 			}
 			t = tp.nextToken();
-			if (t == null || t.type == null || !t.type.equals(INFER)) {// ³ö´í£¬µÚ¶þ¸ö·ûºÅ±ØÐëÊÇÍÆ³ö·ûºÅ
-				System.out.println("Error: line " + line + " µÚ¶þ¸ö·ûºÅ±ØÐëÊÇÍÆ³ö·ûºÅ\n\t"
+			if (t == null || t.type == null || !t.type.equals(INFER)) {// ï¿½ï¿½ï¿½?ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½Å±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½ï¿½ï¿½ï¿½
+				System.out.println("Error: line " + line + " ï¿½Ú¶ï¿½ï¿½ï¿½ï¿½ï¿½Å±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½ï¿½ï¿½ï¿½\n\t"
 						+ s);
 				return null;
 			}
@@ -218,28 +218,28 @@ public class CommProcess {
 				t = tp.nextToken();
 				if (must) {
 					if (t == null || t.type == null
-							|| !(t.type.equals(NT) || t.type.equals(T))) {// ³ö´í£¬µÚÈý¸ö·ûºÅ±ØÐëÊÇ·ÇÖÕ½á·û»òÕßÖÕ½á·û
+							|| !(t.type.equals(NT) || t.type.equals(T))) {// ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å±ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ½ï¿½ï¿½
 						System.out
 								.println("Error: line "
 										+ line
-										+ " :µÚÈý¸ö·ûºÅ±ØÐëÊÇ·ÇÖÕ½á·û»òÕßÖÕ½á·û»òÕß|Ö®ºó±ØÐëÓÐ·ÇÖÕ½á·û»òÖÕ½á·û\n\t"
+										+ " :ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å±ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ï¿½ï¿½|Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð·ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ï¿½Õ½ï¿½ï¿½\n\t"
 										+ s);
 						return null;
 					}
 				} else {
-					if (t == null) {// µ½´ï×Ö·û´®Ä©Î²
+					if (t == null) {// ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½Ä©Î²
 						prodHelp.get(nts.get(k.str)).add(
 								tmp.toArray(new Integer[tmp.size()]));
 						continue outer;
-					} else if (t.type == null || t.type.equals(INFER)) {// ³ö´í
+					} else if (t.type == null || t.type.equals(INFER)) {// ï¿½ï¿½ï¿½ï¿½
 						if (t.type == null)
 							System.out.println("Error: line " + line
-									+ " :·ûºÅ²»ºÏ·¨\n\t" + s);
+									+ " :ï¿½ï¿½Å²ï¿½ï¿½Ï·ï¿½\n\t" + s);
 						else
 							System.out.println("Error: line " + line
-									+ " :²»Ó¦¸ÃÊÇÍÆ³ö·ûºÅ\n\t" + s);
+									+ " :ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½Æ³ï¿½ï¿½ï¿½ï¿½\n\t" + s);
 						return null;
-					} else if (t.type.equals(OR)) {// ºó¼Ì±ØÐëÓÐÆäËû·ûºÅ
+					} else if (t.type.equals(OR)) {// ï¿½ï¿½Ì±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 						must = true;
 						prodHelp.get(nts.get(k.str)).add(
 								tmp.toArray(new Integer[tmp.size()]));
@@ -248,7 +248,7 @@ public class CommProcess {
 					}
 				}
 				must = false;
-				// ÖÕ½á·û»òÕß·ÇÖÕ½á·û£¬¼ÓÈë
+				// ï¿½Õ½ï¿½ï¿½ï¿½ï¿½ß·ï¿½ï¿½Õ½ï¿½ï¿½ï¿½ï¿½ï¿½
 				if (t.type.equals(NT)) {
 					if (!nts.containsKey(t.str)) {
 						if (t.str.length() > longest.length())
@@ -261,11 +261,11 @@ public class CommProcess {
 					if (!ts.containsKey(t.str)) {
 						ts.put(t.str, ts.size() + 1);
 					}
-					tmp.add(-ts.get(t.str));// ÖÕ½á·ûÎª¸ººÅ
+					tmp.add(-ts.get(t.str));// ï¿½Õ½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
 				}
 			}
 		}
-		if (Expend) {// ÍØ¹ãÎÄ·¨
+		if (Expend) {// ï¿½Ø¹ï¿½ï¿½Ä·ï¿½
 			String s_ = longest + "'";
 			nts.put(s_, prodHelp.size());
 			ArrayList<Integer[]> a = new ArrayList<Integer[]>();
@@ -290,15 +290,15 @@ public class CommProcess {
 	}
 
 	public static void main(String[] args) {
-		String[] ps = new String[] { "<E>¡ú<T><E'>", "<E'>¡ú+<T><E'>| ¦Å",
-				"<T>¡ú<F><T'>", "<T'>¡ú*<F><T'>| ¦Å", "<F>¡ú(<E>) | i" };
+		String[] ps = new String[] { "<E>â†’<T><E'>", "<E'>â†’+<T><E'>| Îµ",
+				"<T>â†’<F><T'>", "<T'>â†’*<F><T'>| Îµ", "<F>â†’(<E>) | i" };
 		Grammar p = CommProcess.ProcessProd(ps, true);
 		System.out.println("StartNT=" + p.NTs[p.StartNT]);
 		for (int i = 0; i < p.prod.length; i++) {
-			System.out.print("<" + p.NTs[i] + ">¡ú");
+			System.out.print("<" + p.NTs[i] + ">â†’");
 			for (Integer[] j : p.prod[i]) {
 				for (Integer k : j) {
-					if (k < 0) {// ÖÕ½á·û
+					if (k < 0) {// ï¿½Õ½ï¿½ï¿½
 						System.out.print(" " + p.Ts[-k]);
 					} else {
 						System.out.print(" <" + p.NTs[k] + ">");
